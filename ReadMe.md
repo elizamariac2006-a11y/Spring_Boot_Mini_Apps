@@ -1,4 +1,4 @@
-# Beggining apps for Spring Boot
+# Beginning apps for Spring Boot
 ## Motivation
 - I've done(or am doing, considering the time we are looking over this project) in order to get a little more famliar with Spring Boot.
 - My goal is so to learn more about this, and also remaster my java skills learned previously.   
