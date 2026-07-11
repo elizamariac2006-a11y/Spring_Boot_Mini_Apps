@@ -1,16 +1,20 @@
 package com.luv2code.springboot.demo.mycoolapp.rest;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class TaskTracker1 {
-    public class Task {
+    //for json data saving:
+    private final String file_name = "tasks_saved.json";
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    public static class Task {
         private String task_description;
         private int task_id;
         private boolean done;
@@ -87,9 +91,16 @@ public class TaskTracker1 {
         }
     }
 
-
     int contor = 0;
     List<Task> task_list = new ArrayList<>();
+
+    private void save_data() {
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File(file_name), task_list);
+        } catch(Exception e) {
+            System.out.println("Error at writing in the file : " + e.getMessage() + "\n");
+        }
+    }
 
     @GetMapping("/tasks")
     public String get_intro() {
@@ -135,7 +146,7 @@ public class TaskTracker1 {
         return return_list;
     }
 
-    @GetMapping("/add")
+    @PostMapping("/add")
     String add_task(@RequestParam String task) {
        for(Task t : task_list) {
            if(t.task_description.equalsIgnoreCase(task)) {
@@ -147,7 +158,7 @@ public class TaskTracker1 {
        return "Task added successfully.. Id = " + contor;
     }
 
-    @GetMapping("/mark-in-progress")
+    @PatchMapping("/mark-in-progress")
     public String mark_in_progress(@RequestParam int id) {
         if(id > contor) {
             return "There is no task with such id..";
@@ -163,7 +174,7 @@ public class TaskTracker1 {
         return "There is no task with such id..";
     }
 
-    @GetMapping("/mark-done")
+    @PatchMapping("/mark-done")
     public String mark_as_done(@RequestParam int id) {
         if(id > contor) {
             return "There is no task with such id..";
@@ -179,7 +190,7 @@ public class TaskTracker1 {
         return "There is no task with such id..";
     }
 
-    @GetMapping("/update")
+    @PutMapping("/update")
     String update_task(@RequestParam int id, @RequestParam String task) {
         if(id > contor) {
             return "There is no task with such id..";
@@ -195,7 +206,7 @@ public class TaskTracker1 {
         return "There is no task with such id..";
     }
 
-    @GetMapping("/delete")
+    @DeleteMapping("/delete")
     String delete_task(@RequestParam int id) {
         boolean was_deleted = task_list.removeIf(t -> t.task_id == id);
         if(was_deleted ) {
